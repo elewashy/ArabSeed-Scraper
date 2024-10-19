@@ -26,6 +26,10 @@ def fetch_page(url):
         for iframe in soup.find_all('iframe', id='container-6f4f5c3f5bfa5f5651799c658cb3556b24485'):
             iframe.decompose()  # Remove the iframe with specific id
 
+        # Remove elements with the specific class that may cause issues
+        for content in soup.find_all('div', class_='pl-6f4f5c3f5bfa5f5651799c658cb3556b__content'):
+            content.decompose()  # Remove the element with the specified class
+
         # Remove suspicious links, for example with specific href values
         for link in soup.find_all('a', href=True):
             # Remove links with specific id or suspicious href patterns
