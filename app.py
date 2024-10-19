@@ -55,6 +55,9 @@ def fetch_page(url):
             # Create a new link with the full page URL after the domain
             new_link = f'https://arabseed-server.vercel.app/asd.quest/{path}'  # Format of the new link
             watch_btn['href'] = new_link  # Replace the old link with the new one
+        for btn in soup.find_all('a', class_='downloadBTn'):
+            new_link = f'https://arabseed-server.vercel.app/asd.quest/{path}'  # Format of the new link
+            btn['href'] = new_link  # Replace the old link with the new one
 
         # Replace all links that point to the local server with the new base URL
         for tag in soup.find_all('a', href=True):
