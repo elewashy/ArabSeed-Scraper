@@ -15,22 +15,34 @@ def fetch_page(url):
         # Parse the content using BeautifulSoup
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # List of ad-related patterns to remove
-        ad_patterns = [
-            'ad', 'advertisement', 'promo', 'banner', 'sponsored',
-            'montag', 'adsteras', 'google', 'advert', 'ads', 'iframe', 
-            'popup', 'overlay', 'zogzrj3', 'lk68o', 'marketing', 'tracking', 
-            'click', 'offer', 'discount', 'sale', 'free', 'limited time'
+        # Remove ad-related elements based on classes and ids
+        ad_classes = [
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__wrap', 
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__content',
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__closelink',
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__bubble',
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__title',
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__descr',
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__message',
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__message-after',
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__girl-icon',
+            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__pic'
         ]
 
-        # Remove ad elements based on patterns
-        for pattern in ad_patterns:
-            for element in soup.find_all(['div', 'iframe', 'a'], string=lambda text: text and pattern.lower() in text.lower()):
-                element.decompose()  # Remove the element that matches the pattern
+        # Remove elements with specific classes
+        for class_name in ad_classes:
+            for element in soup.find_all(class_=class_name):
+                element.decompose()
 
-        # Remove all pop-up elements
-        for element in soup.find_all(['div', 'iframe', 'a'], class_='popup'):
-            element.decompose()
+        # Remove the specific iframe element by id
+        iframe_element = soup.find('iframe', id='container-6f4f5c3f5bfa5f5651799c658cb3556b46751')
+        if iframe_element:
+            iframe_element.decompose()
+
+        # Remove the specific body element with class 'vsc-initialized'
+        body_class_element = soup.find('body', class_='vsc-initialized')
+        if body_class_element:
+            body_class_element.decompose()
 
         # Modify all 'a' tags with target="_blank" to remove this attribute
         for link in soup.find_all('a', target='_blank'):
