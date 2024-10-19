@@ -39,7 +39,24 @@ def fetch_page(url):
             else:
                 # For relative URLs, make them relative to the base URL
                 tag['href'] = f'/browse?url={url}/{tag["href"]}'  # Use the raw href
-        
+
+        # Get the part of the URL after the domain
+        page_url = unquote(url)  # This is the full URL
+        path = page_url.split('://')[-1]  # Remove the protocol
+        path = path.split('/', 1)[-1]  # Get everything after the domain
+
+        # Replace the link inside watchBTn with the complete URL after the domain
+        for watch_btn in soup.find_all('a', class_='watchBTn'):
+            # Create a new link with the full page URL after the domain
+            new_link = f'https://arabseed-server.vercel.app/asd.quest/{path}'  # Format of the new link
+            watch_btn['href'] = new_link  # Replace the old link with the new one
+
+        # Replace all links that point to the local server with the new base URL
+        for tag in soup.find_all('a', href=True):
+            if tag['href'].startswith('http://127.0.0.1:5000/browse?url=https://'):
+                # Replace the URL with the new base URL
+                tag['href'] = tag['href'].replace('http://127.0.0.1:5000/browse?url=https://', 'https://arabseed-server.vercel.app/')
+
         return str(soup)
     except Exception as e:
         return f'<h1>Error</h1><p>{str(e)}</p>'
