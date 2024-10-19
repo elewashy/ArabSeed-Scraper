@@ -15,35 +15,6 @@ def fetch_page(url):
         # Parse the content using BeautifulSoup
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Remove ad-related elements based on classes and ids
-        ad_classes = [
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__wrap', 
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__content',
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__closelink',
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__bubble',
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__title',
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__descr',
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__message',
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__message-after',
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__girl-icon',
-            'pl-6f4f5c3f5bfa5f5651799c658cb3556b__pic'
-        ]
-
-        # Remove elements with specific classes
-        for class_name in ad_classes:
-            for element in soup.find_all(class_=class_name):
-                element.decompose()
-
-        # Remove the specific iframe element by id
-        iframe_element = soup.find('iframe', id='container-6f4f5c3f5bfa5f5651799c658cb3556b46751')
-        if iframe_element:
-            iframe_element.decompose()
-
-        # Remove the specific body element with class 'vsc-initialized'
-        body_class_element = soup.find('body', class_='vsc-initialized')
-        if body_class_element:
-            body_class_element.decompose()
-
         # Remove specific scripts
         script_urls_to_block = [
             "https://www.googletagmanager.com/gtag/js?id=G-D8NNSFR7SN",
