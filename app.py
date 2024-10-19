@@ -1,6 +1,3 @@
-# Install Flask and Requests if you haven't already:
-# pip install Flask requests
-
 from flask import Flask, request, render_template_string
 import requests
 from bs4 import BeautifulSoup
@@ -16,6 +13,22 @@ def fetch_page(url):
 
         # Parse the content using BeautifulSoup
         soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Remove specific elements (e.g., popup ads, suspicious links)
+        for ad in soup.find_all('div', class_='pl-6f4f5c3f5bfa5f5651799c658cb3556b__btn-bloc'):
+            ad.decompose()  # Remove the element from the DOM
+
+        # Keep iframe elements as they are (do not remove them)
+
+        # Remove suspicious links, for example with specific IDs or suspicious href values
+        for link in soup.find_all('a', href=True):
+            # Remove links with specific id or suspicious href patterns
+            if link.get('id') == 'lkld' or 'thugjudgementpreparations.com' in link['href']:
+                link.decompose()  # Remove the suspicious link
+
+        # Modify all 'a' tags with target="_blank" to remove this attribute
+        for link in soup.find_all('a', target='_blank'):
+            link['target'] = '_self'  # Open in the same window instead of a new one
 
         # Modify the URLs in the page to work within the Flask app
         for tag in soup.find_all('a', href=True):
