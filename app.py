@@ -19,13 +19,18 @@ def fetch_page(url):
         ad_patterns = [
             'ad', 'advertisement', 'promo', 'banner', 'sponsored',
             'montag', 'adsteras', 'google', 'advert', 'ads', 'iframe', 
-            'popup', 'overlay', 'zogzrj3', 'lk68o'
+            'popup', 'overlay', 'zogzrj3', 'lk68o', 'marketing', 'tracking', 
+            'click', 'offer', 'discount', 'sale', 'free', 'limited time'
         ]
 
         # Remove ad elements based on patterns
         for pattern in ad_patterns:
             for element in soup.find_all(['div', 'iframe', 'a'], string=lambda text: text and pattern.lower() in text.lower()):
                 element.decompose()  # Remove the element that matches the pattern
+
+        # Remove all pop-up elements
+        for element in soup.find_all(['div', 'iframe', 'a'], class_='popup'):
+            element.decompose()
 
         # Modify all 'a' tags with target="_blank" to remove this attribute
         for link in soup.find_all('a', target='_blank'):
