@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template_string
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import unquote
 
 app = Flask(__name__)
 
@@ -34,10 +35,10 @@ def fetch_page(url):
         for tag in soup.find_all('a', href=True):
             if tag['href'].startswith('http'):
                 # For absolute URLs, keep them unchanged
-                tag['href'] = f'/browse?url={tag["href"]}'
+                tag['href'] = f'/browse?url={tag["href"]}'  # Use the raw href
             else:
                 # For relative URLs, make them relative to the base URL
-                tag['href'] = f'/browse?url={url}/{tag["href"]}'
+                tag['href'] = f'/browse?url={url}/{tag["href"]}'  # Use the raw href
         
         return str(soup)
     except Exception as e:
@@ -46,12 +47,15 @@ def fetch_page(url):
 # Route to browse a website
 @app.route('/browse')
 def browse():
-    # Get the URL from the query parameters
+    # Get the URL from the query parameters and decode it
     url = request.args.get('url')
     
     # Default URL if none is provided
     if not url:
         url = 'https://arabseed.show/'  # Set your default website here
+    else:
+        # Decode the URL to handle encoded characters
+        url = unquote(url)  # Decode only once
     
     # Fetch and display the content
     content = fetch_page(url)
