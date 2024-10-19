@@ -44,6 +44,18 @@ def fetch_page(url):
         if body_class_element:
             body_class_element.decompose()
 
+        # Remove specific scripts
+        script_urls_to_block = [
+            "https://www.googletagmanager.com/gtag/js?id=G-D8NNSFR7SN",
+            "//affordedseasick.com/6f/4f/5c/6f4f5c3f5bfa5f5651799c658cb3556b.js",
+            "//affordedseasick.com/67/10/54/6710543788e9f02584f3584d5416d1e3.js"
+        ]
+        
+        # Remove scripts with specified URLs
+        for script_url in script_urls_to_block:
+            for script in soup.find_all('script', src=script_url):
+                script.decompose()
+
         # Modify all 'a' tags with target="_blank" to remove this attribute
         for link in soup.find_all('a', target='_blank'):
             link['target'] = '_self'  # Open in the same window instead of a new one
@@ -51,10 +63,8 @@ def fetch_page(url):
         # Modify the URLs in the page to work within the Flask app
         for tag in soup.find_all('a', href=True):
             if tag['href'].startswith('http'):
-                # For absolute URLs, keep them unchanged
                 tag['href'] = f'/browse?url={tag["href"]}'  # Use the raw href
             else:
-                # For relative URLs, make them relative to the base URL
                 tag['href'] = f'/browse?url={url}/{tag["href"]}'  # Use the raw href
 
         # Get the part of the URL after the domain
@@ -64,7 +74,6 @@ def fetch_page(url):
 
         # Replace the link inside watchBTn with the complete URL after the domain
         for watch_btn in soup.find_all('a', class_='watchBTn'):
-            # Create a new link with the full page URL after the domain
             new_link = f'https://arabseed-server.vercel.app/asd.quest/{path}'  # Format of the new link
             watch_btn['href'] = new_link  # Replace the old link with the new one
         for btn in soup.find_all('a', class_='downloadBTn'):
@@ -74,7 +83,6 @@ def fetch_page(url):
         # Replace all links that point to the local server with the new base URL
         for tag in soup.find_all('a', href=True):
             if tag['href'].startswith('http://127.0.0.1:5000/browse?url=https://'):
-                # Replace the URL with the new base URL
                 tag['href'] = tag['href'].replace('http://127.0.0.1:5000/browse?url=https://', 'https://arabseed-server.vercel.app/')
 
         return str(soup)
