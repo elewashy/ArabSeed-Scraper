@@ -14,27 +14,17 @@ def fetch_page(url):
         # Parse the content using BeautifulSoup
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Remove specific elements (e.g., popup ads, suspicious links, divs with fixed position)
-        for ad in soup.find_all('div', id='zogzrj3'):
-            ad.decompose()  # Remove the element with id 'zogzrj3'
+        # List of ad-related patterns to remove
+        ad_patterns = [
+            'ad', 'advertisement', 'promo', 'banner', 'sponsored',
+            'montag', 'adsteras', 'google', 'advert', 'ads', 'iframe', 
+            'popup', 'overlay', 'zogzrj3', 'lk68o'
+        ]
 
-        # Remove specific link with id 'lk68o'
-        for link in soup.find_all('a', id='lk68o'):
-            link.decompose()  # Remove the link with id 'lk68o'
-
-        # Remove iframe with specific class
-        for iframe in soup.find_all('iframe', id='container-6f4f5c3f5bfa5f5651799c658cb3556b24485'):
-            iframe.decompose()  # Remove the iframe with specific id
-
-        # Remove elements with the specific class that may cause issues
-        for content in soup.find_all('div', class_='pl-6f4f5c3f5bfa5f5651799c658cb3556b__content'):
-            content.decompose()  # Remove the element with the specified class
-
-        # Remove suspicious links, for example with specific href values
-        for link in soup.find_all('a', href=True):
-            # Remove links with specific id or suspicious href patterns
-            if 'hoodboth.com' in link['href']:
-                link.decompose()  # Remove the suspicious link
+        # Remove ad elements based on patterns
+        for pattern in ad_patterns:
+            for element in soup.find_all(['div', 'iframe', 'a'], string=lambda text: text and pattern.lower() in text.lower()):
+                element.decompose()  # Remove the element that matches the pattern
 
         # Modify all 'a' tags with target="_blank" to remove this attribute
         for link in soup.find_all('a', target='_blank'):
