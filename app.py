@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request, render_template_string, render_template
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import unquote
@@ -31,34 +31,69 @@ def fetch_page(url):
         for link in soup.find_all('a', target='_blank'):
             link['target'] = '_self'  # Open in the same window instead of a new one
 
-        # Modify the URLs in the page to work within the Flask app
+        # Replace the specific link for anchors and forms
         for tag in soup.find_all('a', href=True):
-            if tag['href'].startswith('http'):
-                tag['href'] = f'/browse?url={tag["href"]}'  # Use the raw href
+            original_href = tag['href']
+
+            # Replace https://asd.quest/find with /search
+            if original_href == 'https://asd.quest/find':
+                tag['href'] = '/search'  # Replace with the search route
+
+            # If the href is a full URL
+            elif original_href.startswith('http'):
+                tag['href'] = f'/browse?url={original_href}'  # Use the raw href
             else:
-                tag['href'] = f'/browse?url={url}/{tag["href"]}'  # Use the raw href
+                # If the href contains 'find', replace it with 'search'
+                if original_href.startswith('/find/?find='):
+                    # Replace with /search
+                    search_query = original_href.split('find=')[-1]  # Get the query after 'find='
+                    tag['href'] = f'/search?find={search_query}'  # Modify to /search?find=
+                elif original_href.startswith('/find/'):
+                    # If the link contains 'find' but is not in the format '/find/?find=', handle it
+                    tag['href'] = original_href.replace('/find/', '/search?find=')
 
-        # Get the part of the URL after the domain
-        page_url = unquote(url)  # This is the full URL
-        path = page_url.split('://')[-1]  # Remove the protocol
-        path = path.split('/', 1)[-1]  # Get everything after the domain
+                # For other links, append to the current URL
+                else:
+                    tag['href'] = f'/browse?url={url}/{original_href}'  # Use the raw href
 
-        # Replace the link inside watchBTn with the complete URL after the domain
-        for watch_btn in soup.find_all('a', class_='watchBTn'):
-            new_link = f'https://arabseed-server.vercel.app/asd.quest/{path}'  # Format of the new link
-            watch_btn['href'] = new_link  # Replace the old link with the new one
-        for btn in soup.find_all('a', class_='downloadBTn'):
-            new_link = f'https://arabseed-server.vercel.app/asd.quest/{path}'  # Format of the new link
-            btn['href'] = new_link  # Replace the old link with the new one
+        # Replace form actions
+        for form in soup.find_all('form', action=True):
+            if form['action'] == 'https://asd.quest/find':
+                form['action'] = '/search'  # Replace the action with /search
+        # تحويل <i> داخل <div class="SearchBtn"> إلى <a>
+        for div in soup.find_all('div', class_='SearchBtn'):
+            icon = div.find('i', class_='fal fa-search')  # ابحث عن الأيقونة داخل div
+            if icon:
+                # إنشاء عنصر <a>
+                new_link = soup.new_tag('a', href='/find', style='display: block;')  # إضافة style للحفاظ على الشكل
+                # إضافة الأيقونة إلى الرابط
+                new_link.append(icon.extract())  # استخدام extract لإزالة الأيقونة من مكانها
 
-        # Replace all links that point to the local server with the new base URL
-        for tag in soup.find_all('a', href=True):
-            if tag['href'].startswith('http://127.0.0.1:5000/browse?url=https://'):
-                tag['href'] = tag['href'].replace('http://127.0.0.1:5000/browse?url=https://', 'https://arabseed-server.vercel.app/')
+                # إضافة الرابط الجديد إلى الـ <div>
+                div.clear()  # مسح المحتويات الحالية
+                div.append(new_link)  # إضافة الرابط الجديد إلى الـ <div>
 
+        # Return the modified HTML
         return str(soup)
     except Exception as e:
         return f'<h1>Error</h1><p>{str(e)}</p>'
+
+# Route to search using the search form
+@app.route('/search')
+def search():
+    # Get the 'find' query parameter from the request
+    search_query = request.args.get('find')
+    offset = request.args.get('offset')  # Get the offset parameter if it exists
+
+    # Construct the search URL
+    if search_query:
+        search_url = f'https://asd.quest/find/?find={search_query}'
+        if offset:
+            search_url += f'&offset={offset}'  # Append offset if it exists
+        content = fetch_page(search_url)
+        return render_template_string(content)
+    
+    return '<h1>No search query provided</h1>'
 
 # Route to browse a website
 @app.route('/browse')
@@ -72,10 +107,15 @@ def browse():
     else:
         # Decode the URL to handle encoded characters
         url = unquote(url)  # Decode only once
-    
-    # Fetch and display the content
+
+    # Fetch and display the content for other URLs
     content = fetch_page(url)
     return render_template_string(content)
+
+# Route to render the index.html file
+@app.route('/find')
+def html_page():
+    return render_template('search.html')  # Open index.html from the templates folder
 
 # Home route
 @app.route('/')
@@ -83,6 +123,10 @@ def home():
     return '''
         <h1>Flask Browser</h1>
         <p>Enter a URL to start browsing.</p>
+        <form action="/search" id="main-p-search" method="get">
+            <input name="find" placeholder="البحث السريع ..." type="text"/>
+            <button type="submit"><i class="fal fa-search"></i> Search</button>
+        </form>
         <form action="/browse">
             <input type="text" name="url" placeholder="Enter URL">
             <button type="submit">Go</button>
