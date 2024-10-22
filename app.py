@@ -72,6 +72,32 @@ def fetch_page(url):
                 # إضافة الرابط الجديد إلى الـ <div>
                 div.clear()  # مسح المحتويات الحالية
                 div.append(new_link)  # إضافة الرابط الجديد إلى الـ <div>
+        # Modify the URLs in the page to work within the Flask app
+        for tag in soup.find_all('a', href=True):
+            if tag['href'].startswith('http'):
+                tag['href'] = f'/browse?url={tag["href"]}'
+            else:
+                tag['href'] = f'/browse?url={url}/{tag["href"]}'
+
+        # Get the part of the URL after the domain
+        page_url = unquote(url)
+        path = page_url.split('://')[-1]
+        path = path.split('/', 1)[-1]
+
+        # Replace the link inside watchBTn with the complete URL after the domain
+        for watch_btn in soup.find_all('a', class_='watchBTn'):
+            new_link = f'https://arabseed-server.vercel.app/asd.quest/{path}'
+            watch_btn['href'] = new_link
+
+        # Replace the link inside downloadBTn similarly
+        for btn in soup.find_all('a', class_='downloadBTn'):
+            new_link = f'https://arabseed-server.vercel.app/asd.quest/{path}'
+            btn['href'] = new_link
+
+        # Replace all links that point to the local server with the new base URL
+        for tag in soup.find_all('a', href=True):
+            if tag['href'].startswith('http://127.0.0.1:5000/browse?url=https://'):
+                tag['href'] = tag['href'].replace('http://127.0.0.1:5000/browse?url=https://', 'https://arabseed-server.vercel.app/')
 
         # Return the modified HTML
         return str(soup)
