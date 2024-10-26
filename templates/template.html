@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://egyfilm-app.vercel.app/assets/css/plyr.css" />
     <link rel="stylesheet" href="https://egyfilm-app.vercel.app/assets/css/fluidplayer.min.css" type="text/css" />
     <script src="https://egyfilm-app.vercel.app/assets/js/plyr.js"></script>
@@ -29,6 +30,18 @@
             background: linear-gradient(135deg, #005ce6, #0088cc); /* تغيير تدرج الألوان عند التحويم */
             box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4); /* تكبير الظل عند التحويم */
             transform: translateY(-3px); /* تحريك الزر للأعلى قليلاً عند التحويم */
+        }
+                /* تحسينات لأحجام الشاشات الصغيرة */
+                @media (max-width: 600px) {
+                    .download-button {
+            padding: 20px 45px;
+            font-size: 24px;
+        }
+
+            video {
+                max-width: 100%;
+                height: auto;
+            }
         }
 
     </style>
