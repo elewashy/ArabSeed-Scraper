@@ -30,6 +30,19 @@
             box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4); /* تكبير الظل عند التحويم */
             transform: translateY(-3px); /* تحريك الزر للأعلى قليلاً عند التحويم */
         }
+                        /* تحسينات لأحجام الشاشات الصغيرة */
+                        @media (max-width: 600px) {
+                    .download-button {
+            padding: 20px 45px;
+            font-size: 24px;
+        }
+
+            video {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+
     </style>
 </head>
 <body>
