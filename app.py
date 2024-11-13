@@ -165,7 +165,7 @@ def scrape(target_url):
                     watch_soup = BeautifulSoup(watch_response.text, 'html.parser')
                     links = watch_soup.find_all('li', attrs={'data-link': True})
 
-                    domain = "https://w5.gamezone.cam"
+                    domain = "https://w5.gameshop4u.com"
 
                     for link in links:
                         video_link = link['data-link']
