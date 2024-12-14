@@ -118,12 +118,7 @@ def html_page():
 @app.route('/')
 def home():
     return '''
-        <h1>Flask Browser</h1>
-        <p>Enter a URL to start browsing.</p>
-        <form action="/search" id="main-p-search" method="get">
-            <input name="find" placeholder="البحث السريع ..." type="text"/>
-            <button type="submit"><i class="fal fa-search"></i> Search</button>
-        </form>
+
         <form action="/browse">
             <input type="text" name="url" placeholder="Enter URL">
             <button type="submit">Go</button>
