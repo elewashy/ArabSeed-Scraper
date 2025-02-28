@@ -10,7 +10,7 @@ def fetch_page(url):
     try:
         # Send GET request to the external website
         headers = {
-            'Referer': 'https://asd.quest/',
+            'Referer': 'https://asd.rest/',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
         response = requests.get(url, headers=headers)
@@ -36,7 +36,7 @@ def fetch_page(url):
         # Replace the specific link for anchors and forms
         for tag in soup.find_all('a', href=True):
             original_href = tag['href']
-            if original_href == 'https://asd.quest/find':
+            if original_href == 'https://asd.rest/find':
                 tag['href'] = '/search'
             elif original_href.startswith('http'):
                 tag['href'] = f'/browse?url={original_href}'
@@ -50,7 +50,7 @@ def fetch_page(url):
                     tag['href'] = f'/browse?url={url}/{original_href}'
 
         for form in soup.find_all('form', action=True):
-            if form['action'] == 'https://asd.quest/find':
+            if form['action'] == 'https://asd.rest/find':
                 form['action'] = '/search'
 
         for div in soup.find_all('div', class_='SearchBtn'):
@@ -66,11 +66,11 @@ def fetch_page(url):
         path = path.split('/', 1)[-1]
 
         for watch_btn in soup.find_all('a', class_='watchBTn'):
-            new_link = f'/server/asd.quest/{path}'
+            new_link = f'/server/asd.rest/{path}'
             watch_btn['href'] = new_link
 
         for btn in soup.find_all('a', class_='downloadBTn'):
-            new_link = f'/server/asd.quest/{path}'
+            new_link = f'/server/asd.rest/{path}'
             btn['href'] = new_link
 
         for tag in soup.find_all('a', href=True):
@@ -88,7 +88,7 @@ def search():
     offset = request.args.get('offset')
 
     if search_query:
-        search_url = f'https://asd.quest/find/?find={search_query}'
+        search_url = f'https://asd.rest/find/?find={search_query}'
         if offset:
             search_url += f'&offset={offset}'
         content = fetch_page(search_url)
@@ -129,7 +129,7 @@ def home():
 @app.route('/server/<path:target_url>', methods=['GET'])
 def scrape(target_url):
     headers = {
-        'Referer': 'https://asd.quest/',
+        'Referer': 'https://asd.rest/',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
 
