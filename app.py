@@ -115,9 +115,6 @@ def browse():
 def html_page():
     return render_template('search.html')
 
-
-
-
 # New route to scrape a specific page and fetch quality-based video links
 @app.route('/server/<path:target_url>', methods=['GET'])
 def scrape(target_url):
