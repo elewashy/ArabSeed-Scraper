@@ -49,13 +49,13 @@
 <body>
     <video id='player' controls>
         {% if links[720] %}
-            <source src='https://egyfilm-app-server.vercel.app/{{ links[720] }}/arabseed.mp4' type='video/mp4' size='720'>
+            <source src='https://egyfilm-app-server.vercel.app/{{ links[720] }}' type='video/mp4' size='720'>
         {% endif %}
         {% if links[480] %}
-            <source src='https://egyfilm-app-server.vercel.app/{{ links[480] }}/arabseed.mp4' type='video/mp4' size='480'>
+            <source src='https://egyfilm-app-server.vercel.app/{{ links[480] }}' type='video/mp4' size='480'>
         {% endif %}
         {% if links[1080] %}
-            <source src='https://egyfilm-app-server.vercel.app/{{ links[1080] }}/arabseed.mp4' type='video/mp4' size='1080'>
+            <source src='https://egyfilm-app-server.vercel.app/{{ links[1080] }}' type='video/mp4' size='1080'>
         {% endif %}
     </video>
     
