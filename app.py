@@ -96,7 +96,8 @@ def search():
 
     return '<h1>No search query provided</h1>'
 
-# Route to browse a website
+# Home route
+@app.route('/')
 @app.route('/browse')
 def browse():
     url = request.args.get('url')
@@ -114,16 +115,8 @@ def browse():
 def html_page():
     return render_template('search.html')
 
-# Home route
-@app.route('/')
-def home():
-    return '''
 
-        <form action="/browse">
-            <input type="text" name="url" placeholder="Enter URL">
-            <button type="submit">Go</button>
-        </form>
-    '''
+
 
 # New route to scrape a specific page and fetch quality-based video links
 @app.route('/server/<path:target_url>', methods=['GET'])
