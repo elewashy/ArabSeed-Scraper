@@ -10,7 +10,7 @@ def fetch_page(url):
     try:
         # Send GET request to the external website
         headers = {
-            'Referer': 'https://m15.asd.rest/',
+            'Referer': 'https://a.asd.homes/',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
         response = requests.get(url, headers=headers)
@@ -23,7 +23,9 @@ def fetch_page(url):
         script_urls_to_block = [
             "https://www.googletagmanager.com/gtag/js?id=G-D8NNSFR7SN",
             "//affordedseasick.com/6f/4f/5c/6f4f5c3f5bfa5f5651799c658cb3556b.js",
-            "//affordedseasick.com/67/10/54/6710543788e9f02584f3584d5416d1e3.js"
+            "//affordedseasick.com/67/10/54/6710543788e9f02584f3584d5416d1e3.js",
+            "//containingstripesadmonish.com/6f/4f/5c/6f4f5c3f5bfa5f5651799c658cb3556b.js",
+            "//containingstripesadmonish.com/67/10/54/6710543788e9f02584f3584d5416d1e3.js"
         ]
         for script_url in script_urls_to_block:
             for script in soup.find_all('script', src=script_url):
@@ -36,7 +38,7 @@ def fetch_page(url):
         # Replace the specific link for anchors and forms
         for tag in soup.find_all('a', href=True):
             original_href = tag['href']
-            if original_href == 'https://m15.asd.rest/find':
+            if original_href == 'https://a.asd.homes/find':
                 tag['href'] = '/search'
             elif original_href.startswith('http'):
                 tag['href'] = f'/browse?url={original_href}'
@@ -50,7 +52,7 @@ def fetch_page(url):
                     tag['href'] = f'/browse?url={url}/{original_href}'
 
         for form in soup.find_all('form', action=True):
-            if form['action'] == 'https://m15.asd.rest/find':
+            if form['action'] == 'https://a.asd.homes/find':
                 form['action'] = '/search'
 
         for div in soup.find_all('div', class_='SearchBtn'):
@@ -66,11 +68,11 @@ def fetch_page(url):
         path = path.split('/', 1)[-1]
 
         for watch_btn in soup.find_all('a', class_='watchBTn'):
-            new_link = f'/server/m15.asd.rest/{path}'
+            new_link = f'/server/a.asd.homes/{path}'
             watch_btn['href'] = new_link
 
         for btn in soup.find_all('a', class_='downloadBTn'):
-            new_link = f'/server/m15.asd.rest/{path}'
+            new_link = f'/server/a.asd.homes/{path}'
             btn['href'] = new_link
 
         for tag in soup.find_all('a', href=True):
@@ -88,7 +90,7 @@ def search():
     offset = request.args.get('offset')
 
     if search_query:
-        search_url = f'https://m15.asd.rest/find/?find={search_query}'
+        search_url = f'https://a.asd.homes/find/?find={search_query}'
         if offset:
             search_url += f'&offset={offset}'
         content = fetch_page(search_url)
@@ -119,7 +121,7 @@ def html_page():
 @app.route('/server/<path:target_url>', methods=['GET'])
 def scrape(target_url):
     headers = {
-        'Referer': 'https://m15.asd.rest/',
+        'Referer': 'https://a.asd.homes/',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
 
